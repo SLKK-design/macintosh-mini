@@ -40,13 +40,14 @@ set -euo pipefail
 
 REPO_BRANCH="main"   # --branch: test an unmerged branch on a real Pi
 REPO_RAW="https://raw.githubusercontent.com/wr/macintosh-mini/$REPO_BRANCH"
-VERSION="1.6.1"
+VERSION="1.7.0"
 
 # SheepShaver paths (DISK_IMAGE is auto-discovered or set via --disk)
 DISK_IMAGE=""
 ROM_FILE="ROM"
 CHIME_FILE="chime.wav"
 MACEMU_DIR="$HOME/macemu"
+SHARE_DIR="mac-exchange"   # shared with the Mac as its "Unix" disk (extfs)
 
 # tag (clean display name) | description | filename (without .wav)
 CHIMES_DATA=(
@@ -592,6 +593,13 @@ pref_get() { sed -n "s/^$2 //p" "$1" 2>/dev/null | head -1; }
 pref_set() {
   if grep -q "^$2 " "$1" 2>/dev/null; then sed -i "s#^$2 .*#$2 $3#" "$1"
   else printf '%s %s\n' "$2" "$3" >> "$1"; fi
+}
+
+# Without an extfs line the emulators share the Pi's whole root filesystem
+# with the Mac as its "Unix" disk. Point it at ~/mac-exchange instead, unless
+# the user already chose a folder.
+add_share_pref() {  # $1=prefs
+  grep -q '^extfs ' "$1" 2>/dev/null || printf 'extfs %s\n' "$HOME/$SHARE_DIR" >> "$1"
 }
 
 reconf_disk() {   # $1=prefs  $2=is_basilisk
@@ -1392,6 +1400,13 @@ fi
 
 aplay -q /usr/local/bin/chime.wav 2>/dev/null &
 
+# slirp reads the DNS server from /etc/resolv.conf once, when the emulator
+# starts: launched before wi-fi is up, the Mac has no DNS until a restart.
+# Wait for NetworkManager to finish bringing the network up (the chime plays
+# meanwhile). Offline, or with no network configured, this returns at once;
+# a network that never comes up costs at most 20 s.
+command -v nm-online >/dev/null 2>&1 && { nm-online -s -q -t 20 2>/dev/null || true; }
+
 rm -f /tmp/sheepshaver.exit
 # labwc reads ~/.config/labwc/rc.xml and rotates the output from the DRM
 # panel-orientation at init (rotated first frame, no flash). -S runs the
@@ -1421,7 +1436,11 @@ LAUNCHER
   run "[sheepshaver] Installing launcher + sounds" install_launcher
 
   write_prefs() {
-    [[ -f "$HOME/.sheepshaver_prefs" ]] && return 0   # update: keep existing prefs
+    mkdir -p "$HOME/$SHARE_DIR"
+    if [[ -f "$HOME/.sheepshaver_prefs" ]]; then   # update: keep existing prefs
+      add_share_pref "$HOME/.sheepshaver_prefs"
+      return 0
+    fi
     local ramsize=67108864     # 64 MB
     local extra=""
     if [[ $PERF -eq 1 ]]; then
@@ -1439,6 +1458,7 @@ fpu true
 nogui true
 nosound false
 ether slirp
+extfs $HOME/$SHARE_DIR
 ignoreillegal false$extra
 EOF
   }
@@ -1564,6 +1584,13 @@ fi
 
 aplay -q /usr/local/bin/chime.wav 2>/dev/null &
 
+# slirp reads the DNS server from /etc/resolv.conf once, when the emulator
+# starts: launched before wi-fi is up, the Mac has no DNS until a restart.
+# Wait for NetworkManager to finish bringing the network up (the chime plays
+# meanwhile). Offline, or with no network configured, this returns at once;
+# a network that never comes up costs at most 20 s.
+command -v nm-online >/dev/null 2>&1 && { nm-online -s -q -t 20 2>/dev/null || true; }
+
 rm -f /tmp/basilisk.exit
 # labwc reads ~/.config/labwc/rc.xml and rotates the output from the DRM
 # panel-orientation at init (rotated first frame, no flash). -S runs the
@@ -1593,7 +1620,11 @@ LAUNCHER
   run "[basilisk] Installing launcher + sounds" install_basilisk_launcher
 
   write_basilisk_prefs() {
-    [[ -f "$HOME/.basilisk_ii_prefs" ]] && return 0   # update: keep existing prefs
+    mkdir -p "$HOME/$SHARE_DIR"
+    if [[ -f "$HOME/.basilisk_ii_prefs" ]]; then   # update: keep existing prefs
+      add_share_pref "$HOME/.basilisk_ii_prefs"
+      return 0
+    fi
     local ramsize=67108864     # 64 MB
     [[ $PERF -eq 1 ]] && ramsize=134217728   # 128 MB
     cat > "$HOME/.basilisk_ii_prefs" <<EOF
@@ -1608,6 +1639,7 @@ fpu true
 nogui true
 nosound false
 ether slirp
+extfs $HOME/$SHARE_DIR
 jit false
 jitfpu false
 frameskip 2

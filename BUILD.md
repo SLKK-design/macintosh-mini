@@ -156,7 +156,8 @@ The fit should be snug, not tight. If the panel has to be forced in, sand the be
 - **The left button** restarts Mac OS, with the crash sound. Pressed twice quickly, it quits to the Pi's command line instead.
 - To change what either button does, edit `COMMANDS` and `DOUBLE_COMMANDS` in [`button_handler.py`](maclock-build/button_handler.py).
 - **Shut Down** in Mac OS (Special → Shut Down) quits to the Pi's command line, and **Restart** restarts the Mac. A crash restarts it on its own. Type `macintosh` at the command line to start the Mac again.
-- **Networking** works out of the box. In Mac OS, set TCP/IP to DHCP.
+- **Networking** works out of the box. In Mac OS, set TCP/IP to DHCP. See [Networking](emulators/README.md#5-preferences) for MacTCP, HTTPS and port forwarding.
+- **To move files to the Mac,** copy them into `~/mac-exchange` on the Pi. They appear on the Mac's disk named Unix.
 
 ## Troubleshooting
 
@@ -171,6 +172,8 @@ The fit should be snug, not tight. If the panel has to be forced in, sand the be
 **The speaker buzzes at low brightness.** The Pi's analogue audio picks up noise from the display's backlight signal. A USB audio adapter removes it.
 
 **The speaker burbles on battery.** On rev 2026.09 boards, noise from the Pi's supply reaches the audio. The clock's charging board puts out about 4 V, not 5 V, even with the charge cable plugged in. Turn the brightness down. The next board revision is designed to remove it; see [Known issues](maclock-build/README.md#known-issues).
+
+**The Mac is online but can't find any server by name.** The emulator started before the Wi-Fi was up and has no DNS server. Restart the Mac with the left button. The installer waits for the Wi-Fi before it starts the Mac, so this only happens when the Wi-Fi takes more than 20 seconds.
 
 **The hostname changes back after a restart.** Raspberry Pi OS resets it on every boot. Give the installer a hostname and it fixes this, or see [Known issues](maclock-build/README.md#known-issues).
 

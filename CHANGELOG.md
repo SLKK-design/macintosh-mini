@@ -3,6 +3,10 @@
 Notable changes to the macintosh-mini installer (`setup.sh`). Re-running on an
 existing Pi shows the entries added since the installed version.
 
+## [1.7.0] - 2026-10-17
+- The Mac shares `~/mac-exchange` with the Pi as its Unix disk, instead of the Pi's whole filesystem. Existing installs get it too, unless they already set a folder.
+- The emulator waits up to 20 s for the Wi-Fi before it starts, so the Mac always has a DNS server. Offline, it starts at once.
+
 ## [1.6.1] - 2026-10-05
 - Turns the Pi's audio output down 4 dB, so the loudest notes of the startup chime no longer crackle through the board's amp.
 

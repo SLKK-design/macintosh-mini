@@ -145,6 +145,8 @@ chmod 700 "$XDG_RUNTIME_DIR"
 
 cd ~
 aplay -q /usr/local/bin/chime.wav 2>/dev/null &
+# slirp reads DNS once at start: let the wi-fi come up first (20 s at most)
+command -v nm-online >/dev/null && { nm-online -s -q -t 20 || true; }
 
 rm -f /tmp/$EMU.exit
 labwc -S "/usr/local/bin/mac-session $EMU $BIN /tmp/$EMU.exit"
@@ -205,6 +207,7 @@ frameskip 2
 idlewait true
 ignoresegv true
 ether slirp
+extfs /home/<you>/mac-exchange
 ```
 
 - `displaycolordepth` is the bit depth: `1` for black and white, `8` for 256 colors or grayscale, `16` for thousands of colors.
@@ -224,6 +227,7 @@ fpu true
 nogui true
 nosound false
 ether slirp
+extfs /home/<you>/mac-exchange
 ignoreillegal false
 sound_buffer 4096
 ```
@@ -231,7 +235,25 @@ sound_buffer 4096
 - The `/16` at the end of the `screen` line is the bit depth: `1` for black and white, `8` for 256 colors or grayscale (set Monitors to Grays in Mac OS for true grayscale), `16` for thousands of colors. Mac OS also saves its own depth in the disk image, so if a setting doesn't take, set it in Monitors too.
 - `ramsize 134217728` (128 MB) and `sound_buffer 4096` are what the installer's performance option uses. Without it, the installer uses 64 MB (`67108864`) and no `sound_buffer` line.
 
-**Networking.** `ether slirp` gives the Mac networking through user-mode NAT, with no setup on the Pi. In Mac OS, set TCP/IP to DHCP. For file sharing, use the Chooser's Server IP Address button; AppleTalk doesn't cross slirp.
+- `extfs` is the Pi folder the Mac sees as a disk named Unix. Replace `<you>` with your user name and create the folder with `mkdir ~/mac-exchange`. Without this line, the Mac sees the Pi's whole filesystem.
+
+**Networking.** `ether slirp` gives the Mac networking through user-mode NAT, with no setup on the Pi. The Mac gets the address `10.0.2.15`, with the gateway at `10.0.2.2` and DNS at `10.0.2.3`. The emulator reads the Pi's DNS server once, when it starts, which is why the launcher waits for the wi-fi.
+
+To get Mac OS online:
+
+1. **System 7.5.3 and later, and Mac OS 8,** come with Open Transport. Open the TCP/IP control panel, set Connect via to Ethernet and Configure to Using DHCP Server, then close it and save.
+2. **System 7.0 and 7.1** need MacTCP. In the MacTCP control panel, pick Ethernet, click More…, and choose Obtain Address: Server.
+3. **Test it** with a period app such as Fetch, Anarchie or a Gopher client. Ping doesn't cross slirp, so a failed ping doesn't mean the network is down.
+
+Most of today's web is HTTPS, which no period browser can open. Run a proxy such as [Macproxy](https://github.com/rdmark/macproxy_classic) or [WebOne](https://github.com/atauenis/webone) on the Pi or another computer, and point the browser's HTTP proxy at it.
+
+For file sharing, use the Chooser's Server IP Address button; AppleTalk doesn't cross slirp. The simplest way to move files is the shared folder: copy them into `~/mac-exchange` on the Pi, for example with `scp`, and they appear on the Mac's Unix disk.
+
+To reach a server running on the Mac from your network, forward a port with a `redir` line. This forwards the Pi's port 8080 to port 80 on the Mac:
+
+```text
+redir tcp:8080::80
+```
 
 ## 6. Start it at boot
 
