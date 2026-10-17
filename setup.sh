@@ -39,7 +39,7 @@
 set -euo pipefail
 
 REPO_BRANCH="main"   # --branch: test an unmerged branch on a real Pi
-REPO_RAW="https://raw.githubusercontent.com/wr/macintosh-mini/$REPO_BRANCH"
+REPO_RAW="https://raw.githubusercontent.com/SLKK-design/macintosh-mini/$REPO_BRANCH"
 VERSION="1.7.0"
 
 # SheepShaver paths (DISK_IMAGE is auto-discovered or set via --disk)
@@ -379,7 +379,7 @@ while [[ $# -gt 0 ]]; do
     --no-night-dim)  NIGHT_DIM=0; shift ;;
     --night-off)     NIGHT_OFF=$2; shift 2 ;;
     --timezone)      TIMEZONE=$2; shift 2 ;;
-    --branch)        REPO_BRANCH=$2; REPO_RAW="https://raw.githubusercontent.com/wr/macintosh-mini/$REPO_BRANCH"; shift 2 ;;
+    --branch)        REPO_BRANCH=$2; REPO_RAW="https://raw.githubusercontent.com/SLKK-design/macintosh-mini/$REPO_BRANCH"; shift 2 ;;
     --debug)         DEBUG=1; shift ;;
     *) die "Unknown option: $1" ;;
   esac

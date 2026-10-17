@@ -138,7 +138,7 @@ The fit should be snug, not tight. If the panel has to be forced in, sand the be
 4. Connect to the Pi over SSH and run the installer:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/wr/macintosh-mini/main/setup.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/SLKK-design/macintosh-mini/main/setup.sh | bash
    ```
 
    It finds the ROM and disk image, installs the emulator, the display drivers and the button and dial services, then restarts the Pi. The Pi then boots straight into Mac OS.

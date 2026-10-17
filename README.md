@@ -17,6 +17,14 @@
   <a href="https://www.youtube.com/watch?v=zAbAf5-H5Yo">⏵ Watch the full build on YouTube</a>
 </p>
 
+> [!NOTE]
+> **This is a fork of [wr/macintosh-mini](https://github.com/wr/macintosh-mini)** by Wells Riley, with better networking. It adds:
+> - **A shared folder.** The Mac sees `~/mac-exchange` on the Pi as a disk named Unix, instead of the Pi's whole filesystem.
+> - **DNS at boot.** The Mac waits for the Wi-Fi before it starts, so it can always look up websites and servers by name.
+> - **A guide to getting online:** Open Transport, MacTCP, HTTPS proxies and port forwarding. See [Networking](emulators/README.md#5-preferences).
+>
+> Everything else is the original project. The install commands below use this fork. For help with anything not about networking, see the original repo.
+
 ---
 
 ## What is it?
@@ -50,7 +58,7 @@ You can [buy a DIY kit or a finished build](https://shop.wells.ee/products/macin
 3. SSH into the Pi and run the install script. It asks a few questions, like which startup chime to play, then does the rest:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/wr/macintosh-mini/main/setup.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/SLKK-design/macintosh-mini/main/setup.sh | bash
    ```
 
 The Pi automatically restarts into Mac OS when it's done.
