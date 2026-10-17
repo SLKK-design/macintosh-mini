@@ -19,7 +19,7 @@
 
 > [!NOTE]
 > **This is a fork of [wr/macintosh-mini](https://github.com/wr/macintosh-mini)** by Wells Riley. 
-> <p>The fork adds network support:</p>p>
+> <p>The fork adds network support:</p>
 > - **A shared folder.** The Mac sees `~/mac-exchange` on the Pi as a disk named Unix, instead of the Pi's whole filesystem.
 > - **DNS at boot.** The Mac waits for the Wi-Fi before it starts, so it can always look up websites and servers by name.
 > - **A guide to getting online:** Open Transport, MacTCP, HTTPS proxies and port forwarding. See [Networking](emulators/README.md#5-preferences).
